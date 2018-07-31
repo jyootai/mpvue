@@ -217,12 +217,17 @@ describe('指令', () => {
   it('v-bind:style', () => {
     assertCodegen(
       `<div v-bind:style="{ color: activeColor, fontSize: fontSize + 'px' }">111</div>`,
-      `<template name="a"><view class="_div" style=" {{('color:' + activeColor + ';' + 'font-size:' + fontSize + 'px' + ';')}}">111</view></template>`,
+      `<template name="a"><view class="_div" style=" {{('color:' + activeColor + ';' + 'font-size:' + (fontSize + 'px') + ';')}}">111</view></template>`,
+      { name: 'a' }
+    )
+    assertCodegen(
+      `<div v-bind:style="{ color: a === b ? activeColor : color, fontSize: fontSize + 'px' }">111</div>`,
+      `<template name="a"><view class="_div" style=" {{(  'color:' +  (a === b ? activeColor : color) +  ';' +  'font-size:' +  (fontSize + 'px') +  ';')}}">111</view></template>`,
       { name: 'a' }
     )
     assertCodegen(
       `<div v-bind:style="[{ color: activeColor, fontSize: fontSize + 'px' }]">111</div>`,
-      `<template name="a"><view class="_div" style=" {{['color:' + activeColor + ';' + 'font-size:' + fontSize + 'px' + ';']}}">111</view></template>`,
+      `<template name="a"><view class="_div" style=" {{['color:' + activeColor + ';' + 'font-size:' + (fontSize + 'px') + ';']}}">111</view></template>`,
       { name: 'a' }
     )
     assertCodegen(
@@ -448,6 +453,13 @@ describe('表单', () => {
       { name: 'a' }
     )
   })
+  it('radio', () => {
+    assertCodegen(
+      `<radio><text>233</text></radio>`,
+      `<template name="a"><radio class="_radio"><text class="_text">233</text></radio></template>`,
+      { name: 'a' }
+    )
+  })
 })
 
 describe('template', () => {
@@ -523,7 +535,7 @@ describe('slot', () => {
   it('插槽', () => {
     assertCodegen(
       `<div><slot>test</slot></div>`,
-      `<template name="a"><view class="_div testModuleId"><template name="default">test</template><template data="{{...$root[$p], $root}}" is="{{$slotdefault || 'default'}}"></template></view></template>`,
+      `<template name="a"><view class="_div testModuleId"><template name="default">test</template><template data="{{...$root[$k], $root}}" is="{{$slotdefault || 'default'}}"></template></view></template>`,
       {
         name: 'a',
         moduleId: 'testModuleId'
@@ -534,7 +546,7 @@ describe('slot', () => {
   it('使用', () => {
     assertCodegen(
       `<div><slot name="w">test</slot></div>`,
-      `<template name="a"><view class="_div"><template name="w">test</template><template data="{{...$root[$p], $root}}" is="{{$slotw || 'w'}}"></template></view></template>`,
+      `<template name="a"><view class="_div"><template name="w">test</template><template data="{{...$root[$k], $root}}" is="{{$slotw || 'w'}}"></template></view></template>`,
       {
         name: 'a'
       }
